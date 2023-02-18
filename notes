@@ -1,0 +1,39 @@
+
+chars just match chars
+operators:
+  ran (range)
+  alt (alternative)
+  seq (sequence)
+  rep (repetition)
+    at-most
+    at-least <- maybe do this first as just rep
+  not
+symbols are user-defined
+
+on non-matching pattern it either yields or fails
+
+nils get ignored in the final result
+
+oh my god, lisp is clunky!
+
+parenthesis make it so you don't need special rules 
+
+some expressions should match empty strings
+
+let's just check a regex engine
+
+let's start by checking if a s
+
+
+that multivalued feels hacky
+death by commitee 
+
+should "alt" advance stuff?
+  naaa
+    but what if it's (not (alt ...))?
+
+exact number of reps
+min number of reps
+max number of reps
+
+
