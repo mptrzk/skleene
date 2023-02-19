@@ -57,6 +57,14 @@
         (re-rep expr n rst (+ i 1) (concatenate 'string acc val))
         (values (if (>= i n) acc) rst))))
 
+(defun re-not (expr str)
+  (if (re-1 expr str)
+      (values nil str)
+      (if (zerop (length str))
+          (values "" "")
+          (values (subseq str 0 1)
+                  (subseq str 1)))))
+
 (defun re-1 (expr str)
   (cond ((characterp expr) (re-ran expr expr str))
         ((listp expr)
@@ -64,7 +72,8 @@
            (ran (re-ran (cadr expr) (caddr expr) str))
            (alt (re-alt (cdr expr) str))
            (seq (re-seq (cdr expr) str ""))  
-           (rep (re-rep (cadr expr) (caddr expr) str 0 ""))))
+           (rep (re-rep (cadr expr) (caddr expr) str 0 ""))
+           (not (re-not (cadr expr) str))))
         (t (error "invalid expression"))))
 
 (assert (equal (re-1 #\a "") nil))
@@ -78,4 +87,7 @@
 (re-1 '(alt (ran #\a #\c) #\ó) "b")
 (re-1 '(seq #\a #\b) "abcd")
 (re-1 '(rep (seq #\a #\b) 0) "ababcd")
+(re-1 '(not (seq #\a #\b) 0) "ababcd")
+(re-1 '(not (seq #\a #\b) 0) "agabcd")
+(re-1 '(not (seq #\a #\b) 0) "fababcd")
 
