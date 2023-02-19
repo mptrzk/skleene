@@ -29,10 +29,10 @@
 (defun re-ran (lo hi str)
   (if (zerop (length str))
       (values nil "")
-      (values (if (and (char>= (aref str 0) lo)
-                       (char<= (aref str 0) hi)) 
-                  (subseq str 0 1))
-              (subseq str 1))))
+      (if (and (char>= (aref str 0) lo)
+               (char<= (aref str 0) hi)) 
+          (values (subseq str 0 1) (subseq str 1))
+          (values nil str))))
 
 (defun re-alt (exprs str)
   (if exprs
@@ -70,10 +70,12 @@
 (assert (equal (re-1 #\a "") nil))
 (assert (equal (re-1 #\a "a") "a"))
 (assert (equal (re-1 #\a "ba") nil))
+(re-1 #\a "d")
+(re-1 #\a "ad")
 
 (re-1 '(ran #\a #\c) "b")
 (re-1 '(alt #\a #\b) "e")
 (re-1 '(alt (ran #\a #\c) #\ó) "b")
 (re-1 '(seq #\a #\b) "abcd")
-(re-1 '(rep (seq #\a #\b) 0) "ababcd") ;????
+(re-1 '(rep (seq #\a #\b) 0) "ababcd")
 
