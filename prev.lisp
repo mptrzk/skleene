@@ -51,11 +51,20 @@
             (values nil rst)))
       (values acc str)))
 
-(defun re-rep (expr n str i acc)
-  (mlet (((val rst) (re expr str)))
+(defun re-rep (expr nmin nmax str i acc stri)
+  (mlet (((val rst) (re expr stri)))
     (if val
-        (re-rep expr n rst (+ i 1) (concatenate 'string acc val))
-        (values (if (>= i n) acc) rst))))
+        (re-rep expr
+                nmin
+                nmax 
+                str 
+                (+ i 1) 
+                (concatenate 'string acc val)
+                rst)
+        (if (and (if nmin (>= i nmin) t)
+                 (if nmax (<= i nmax) t))
+            (values acc rst)
+            (values nil str)))))
 
 (defun re-not (expr str)
   (if (re expr str)
@@ -69,7 +78,9 @@
   '((alpha-c . (alt (ran #\a #\z)
                   (ran #\A #\Z))) 
     (num-c . (ran #\0 #\9))
-    (alphanum-c . (alt alpha-c num-c))))
+    (alphanum-c . (alt alpha-c num-c))
+    (uint . (rep num-c 1))
+    (int . (seq (rep #\- 0 1) uint))))
 
 (defun re (expr str)
   (cond ((characterp expr) (re-ran expr expr str))
@@ -78,7 +89,13 @@
            (ran (re-ran (cadr expr) (caddr expr) str))
            (alt (re-alt (cdr expr) str))
            (seq (re-seq (cdr expr) str ""))  
-           (rep (re-rep (cadr expr) (caddr expr) str 0 ""))
+           (rep (re-rep (cadr expr)
+                        (caddr expr)
+                        (cadddr expr) 
+                        str 
+                        0 
+                        ""
+                        str))
            (not (re-not (cadr expr) str)))) 
         ((symbolp expr)
          (let ((rec (assoc expr *re-defs*)))
@@ -97,7 +114,9 @@
 (re '(alt #\a #\b) "e")
 (re '(alt (ran #\a #\c) #\ó) "b")
 (re '(seq #\a #\b) "abcd")
-(re '(rep (seq #\a #\b) 0) "ababcd")
+(re '(rep (seq #\a #\b)) "ababcd")
+(re '(rep (seq #\a #\b) 2 2) "ababcd")
+(re '(rep (seq #\a #\b) 2 2) "abababcd")
 (re '(not (seq #\a #\b)) "ababcd")
 (re '(not (seq #\a #\b)) "agabcd")
 (re '(not (seq #\a #\b)) "fababcd")
@@ -106,7 +125,10 @@
           (rep (alt (ran #\a #\z)
                     (ran #\0 #\9))
                0))
-    "1a")
+    "a1")
 
-(re 'num-c "22")
+(re 'uint "2233-")
+(re 'int "--2233") ;bug
+
+;TODO proper testing, refactor 'rep' (iter?)
 
