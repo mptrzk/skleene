@@ -8,7 +8,12 @@ operators:
     at-most
     at-least <- maybe do this first as just rep
   not
+  start (matches start of string)
+  end (matches end of string)
 symbols are user-defined
+
+^^ start and end might be easier to do using indices rather than substrings
+
 
 on non-matching pattern it either yields or fails
 
@@ -36,4 +41,6 @@ exact number of reps
 min number of reps
 max number of reps
 
+not having structs now feels crippling
 
+maybe just whip up python and see how quickly can I do it in it
