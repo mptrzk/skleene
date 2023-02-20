@@ -43,13 +43,13 @@
       (values nil
               str)))
 
-(defun re-seq (exprs str acc)
+(defun re-seq (exprs str acc stri)
   (if exprs
-      (mlet (((val rst) (re (car exprs) str)))
+      (mlet (((val rst) (re (car exprs) stri)))
         (if val
-            (re-seq (cdr exprs) rst (concatenate 'string acc val))
-            (values nil rst)))
-      (values acc str)))
+            (re-seq (cdr exprs) str (concatenate 'string acc val) rst)
+            (values nil str)))
+      (values acc stri)))
 
 (defun re-rep (expr nmin nmax str i acc stri)
   (mlet (((val rst) (re expr stri)))
@@ -88,7 +88,7 @@
          (case (car expr)
            (ran (re-ran (cadr expr) (caddr expr) str))
            (alt (re-alt (cdr expr) str))
-           (seq (re-seq (cdr expr) str ""))  
+           (seq (re-seq (cdr expr) str "" str))  
            (rep (re-rep (cadr expr)
                         (caddr expr)
                         (cadddr expr) 
@@ -128,7 +128,10 @@
     "a1")
 
 (re 'uint "2233-")
-(re 'int "--2233") ;bug
+(re 'int "--2233")
+(re 'int "- 2233") ;bug -- stri in seq?
+(trace re)
+(untrace re)
 
 ;TODO proper testing, refactor 'rep' (iter?)
-
+;it should also check for the upper limit before each iteration
