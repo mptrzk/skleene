@@ -8,8 +8,9 @@ operators:
     at-most
     at-least <- maybe do this first as just rep
   not
-  start (matches start of string)
   end (matches end of string)
+  and
+    if all exprs match, returns the result of the last one
 symbols are user-defined
 
 ^^ start and end might be easier to do using indices rather than substrings
@@ -44,3 +45,20 @@ max number of reps
 not having structs now feels crippling
 
 maybe just whip up python and see how quickly can I do it in it
+
+okay, so how to lex?
+
+is "end" needed for the task?
+  if \n is the last char in the file, there's a gap at the end
+
+iwsc?
+  inline white space character
+    requires and
+
+gap
+  leading & trailing whitespace
+
+what's rep 0 0 ?
+
+are the only useful cases for "and" contain "not" clauses before the last one?
+  nope, it can be used for peeking as well
