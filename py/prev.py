@@ -6,8 +6,8 @@ def re_dbg(v):
 
 def re_end(s):
   if s == '':
-    return '', ''
-  return None, s
+    return '', None
+  return None, None
 
 def re_str(expr, s):
   ss = s[:len(expr)]
@@ -17,29 +17,29 @@ def re_str(expr, s):
     #it just returns the whole string. 
     #TODO describe why the condition makes it impossible for the 2nd slice to be invalid 
   else:
-    return None, s
+    return None, None
 
 def re_ran(lo, hi, s):
   if s == '':
-    return None, s
+    return None, None
   c = s[0]
   rst = s[1:]
   if (ord(c) >= ord(lo) and ord(c) <= ord(hi)):
     return c, rst
-  return None, s
+  return None, None
 
 def re_alt(exprs, s):
   for expr in exprs:
     val, rst = re(expr, s)
     if val != None:
       return val, rst
-  return None, s
+  return None, None
 
 def re_and(exprs, s):
   for expr in exprs:
     val, rst = re(expr, s)
     if val == None:
-      return None, s
+      return None, None
   else:
     return val, rst
 
@@ -48,30 +48,31 @@ def re_seq(exprs, s):
   rst = s
   for expr in exprs:
     val, rst = re(expr, rst)
-    if val == None:
-      return None, s
+    if rst == None:
+      return None, None
     val_acc += val
   return val_acc, rst
 
 def re_rep(expr, lo, hi, s):
   val_acc = ''
-  rst = s
+  s_acc = s
   i = 0
   while hi == None or i <= hi:
-    val, rst = re(expr, rst)
-    if val == None:
+    val, rst = re(expr, s_acc)
+    if rst == None:
       if lo == None or i >= lo:
-        return val_acc, rst #rst should be OK, because misses should always return the input string
-      return None, s
+        return val_acc, s_acc #rst should be OK, because misses should always return the input string
+      return None, None     #^^ now it's not OK. what to do?
     val_acc += val
+    s_acc = rst
     i += 1
-  return None, s
+  return None, None
 
 def re_not(expr, s):
   val, rst = re(expr, s) #returning tuple shenanigans
   if val == None:
-    return (s[0], s[1:]) if s else (None, s) #should it return empty string?
-  return None, s
+    return (s[0], s[1:]) if s else (None, None) #should it return empty string?
+  return None, None
 
 
 re_defs = {
@@ -114,15 +115,12 @@ def re(expr, s):
       return re_not(args[0], s)
 
 def lex(rules, text):
-  res = []
+  tokens = []
   while text:
     for r in rules:
-      val, text = re(r, text)
+      val, res = re(r, text)
       if val != None:
-        res.append([r, val])
+        tokens.append([r, val])
+        text = res
         break
-    else:
-      raise Exception("no rules match the following text:")
-      #TODO sane way to display
-  return res
-
+  return tokens

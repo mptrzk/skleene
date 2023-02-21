@@ -67,4 +67,5 @@ repeating "end"
 maybe "end" should return None as rst?
 chaining with rst from misses looks stupid anyway
 
-
+'.*' in regex
+  .* means "anything other than the next char"
