@@ -62,3 +62,9 @@ what's rep 0 0 ?
 
 are the only useful cases for "and" contain "not" clauses before the last one?
   nope, it can be used for peeking as well
+
+repeating "end"
+maybe "end" should return None as rst?
+chaining with rst from misses looks stupid anyway
+
+

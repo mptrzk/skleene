@@ -1,3 +1,8 @@
+dbg = False
+
+def re_dbg(v):
+  global dbg
+  dbg = v
 
 def re_end(s):
   if s == '':
@@ -65,20 +70,25 @@ def re_rep(expr, lo, hi, s):
 def re_not(expr, s):
   val, rst = re(expr, s) #returning tuple shenanigans
   if val == None:
-    return (s[0], s[1:]) if s else ('', '')
+    return (s[0], s[1:]) if s else (None, s) #should it return empty string?
   return None, s
 
 
 re_defs = {
   'wsc' : ['ran', chr(0), ' '],
+  'iwsc' : ['and', ['not', 'nl'], 'wsc'],
   'nl' : ['alt', ['str', '\r\n'], ['str', '\n']],
   'numc': ['ran', '0', '9'],
   'alphac': ['alt', ['ran', 'a', 'z'], ['ran', 'A', 'Z']],
   'alphanumc': ['alt', 'numc', 'alphac'],
-  'gap' : ['rep', ['seq', ['rep', 'iwsc'], ['alt', 'nl', ['end']]], 1],
+  'gap' : ['rep', ['seq', ['rep', 'iwsc'], ['alt', 'nl', ['end']]], 2], #infinite loop with rep end
+  'paragraph' : ['rep', ['not', 'gap'], 1]
 }
 
+
 def re(expr, s):
+  if dbg:
+    print(f're({expr}, {s})')
   if type(expr) == str:
     #TODO "expression not expanded, use an expanded expression or re-ex function"
     return re(re_defs[expr], s)

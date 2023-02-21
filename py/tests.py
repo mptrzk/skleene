@@ -1,4 +1,4 @@
-from prev import re, lex
+from prev import re_dbg, re, lex
 
 assert(re(['end'], '') == ('', ''))
 assert(re(['end'], 'a') == (None, 'a'))
@@ -25,6 +25,8 @@ assert(re(['alt', ['str', 'a'], ['str', 'c']], 'cbc') == ('c', 'bc'))
 assert(re(['alt', ['str', 'a'], ['str', 'c']], 'dbc') == (None, 'dbc'))
 
 #TODO and tests
+assert(re(['and', ['str', 'abc'], ['str', 'ab']], 'abcd') == ('ab', 'cd'))
+assert(re(['and', ['str', 'abc'], ['str', 'ab']], 'abdd') == (None, 'abdd'))
 
 assert(re(['seq', ['str', 'ab'], ['ran', 'a', 'c']], '') == (None, ''))
 assert(re(['seq', ['str', 'ab'], ['ran', 'a', 'c']], 'ab') == (None, 'ab'))
@@ -38,7 +40,7 @@ assert(re(['rep', ['str', 'ab'], 1], 'ababcd') == ('abab', 'cd'))
 assert(re(['rep', ['str', 'ab'], 1, 1], 'ababcd') == (None, 'ababcd'))
 assert(re(['rep', ['str', 'ab'], 1, 1], 'abcd') == ('ab', 'cd'))
 
-assert(re(['not', ['str', 'ab']], '') == ('', ''))
+assert(re(['not', ['str', 'ab']], '') == (None, ''))
 assert(re(['not', ['str', 'ab']], 'a') == ('a', ''))
 assert(re(['not', ['str', 'ab']], 'aab') == ('a', 'ab'))
 assert(re(['not', ['str', 'ab']], 'abb') == (None, 'abb'))
@@ -65,6 +67,12 @@ assert(re('alphac', 'Kk') == ('K', 'k'))
 
 #TODO alphanumc, uint, int, float
 
+#re_dbg(True)
+#assert(re('gap', '') == (None, ''))
+#assert(re('gap', ' \t\n  \nfoo') == (' \t\n  \n', 'foo'))
+#assert(re('paragraph', 'f') == ('f', ''))
+
+#print(re(['rep', ['not', ['str', 'a']], 1], 'bbb'))
 
 print("all tests passed")
 
